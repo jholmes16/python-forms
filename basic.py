@@ -1,40 +1,26 @@
-from flask import Flask, render_template, session, redirect,url_for
+from flask import Flask, render_template, session, redirect, url_for, flash
 from flask_wtf import FlaskForm
-from wtforms import (StringField, SubmitField, BooleanField,
-                    DateTimeField,RadioField,SelectField,TextAreaField,TextField)
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'mysecretkey'
+app.config['SECRET_KEY'] = 'mykey'
 
-class InfoForm(FlaskForm):
+class SimpleForm(FlaskForm):
 
-    breed = StringField('What breed are you?',validators=[DataRequired()])
-    neutered = BooleanField("Have the puppy been neutered?")
-    mood = RadioField("Please choose you mood:", choices=[('mood_one', "Happy"),('mood_two', "Excited")])
-    food_choice = SelectField(u"Pick you favorite food:", choices=[('chi', "Chicken"),('bf', "Beef"), ('fish', "Fish")])
-    feedback = TextAreaField()
-    submit = SubmitField("Submit")
-
+    submit = SubmitField('Click Me.')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    form = InfoForm()
+
+    form = SimpleForm()
+
     if form.validate_on_submit():
-        session['breed'] = form.breed.data
-        session['neutered'] = form.neutered.data
-        session['mood'] = form.mood.data
-        session['food'] = form.food_choice.data
-        session['feedback'] = form.feedback.data
+        flash('You just clicked the button!')
 
-        return redirect(url_for('thankyou'))
+        return redirect(url_for('index'))
 
-    return render_template('index.html', form=form)
-
-@app.route('/thankyou')
-def thankyou():
-    return render_template("thankyou.html")
+    return render_template("index.html", form=form)
 
 
 if __name__ == '__main__':
